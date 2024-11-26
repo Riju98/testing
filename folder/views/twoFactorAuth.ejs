@@ -1,0 +1,88 @@
+
+<% section = 'login' %>
+<%- include ('header.ejs') %>
+<!-- page content -->
+<section id="content">
+    <header class="headerPage">
+        <div class="container clearfix">
+            <div class="row">
+                <h1 class="span8"><%= title %></h1>
+                <div class="span4" id="navTrail"> <a href="/logout" class="homeLink">Logout</a></div>
+            </div>
+        </div>
+    </header>
+    <div class="slice clearfix">
+        <div class="container">
+            <%- include ('alerts.ejs') %>
+            <div class="row">
+                <div class="span12 text-center">
+                    <% if(qrDataURL) { %>
+                        <h3>Scan the qr code in Authenticator app</h3>
+                    <% } else if(!twoFactorEnabled) { %>
+                        <h3>2FA is not enabled</h3>
+                    <% } else { %>
+                        <h3>Please authenticate yourself with 2fa to proceed</h3>
+                    <% } %>
+                </div>
+            </div>
+            <% if(twoFactorEnabled) { %>
+                <div class="row">
+                    <div class="span4"></div>
+                    <div class="span4">
+                        <form method="post" action="/twoFactorAuth" id="contactform">
+                            <input type="hidden" name="_csrf" value="<%= token %>" class="form-control">
+                            <label for="otp"></label>
+                            <input type="text" name="otp" id="otp" placeholder="OTP" class=""/>
+                            <br />
+                            <button name="submit" type="submit" class="btn" id="submit" value="verify2fa">Submit</button>
+                        </form>
+                        <div id="message"></div>
+                    </div>
+                </div>
+            <% } else if(qrDataURL) { %>
+                <div class="row">
+                    <div class="span4"></div>
+                    <div class="span4">
+                        <img src="<%= qrDataURL %>" alt="QR Code" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="span4"></div>
+                    <div class="span4">
+                        <div>
+                            Enter OTP Shown after scanning QR
+                        </div>
+                        <form method="post" action="/twoFactorAuth?enable2fa=true" id="contactform-1">
+                            <input type="hidden" name="_csrf" value="<%= token %>" class="form-control">
+                            <label for="otp"></label>
+                            <input type="text" name="otp" id="otp" placeholder="OTP" class=""/>
+                            <br />
+                            <button name="submit" type="submit" class="btn" id="submit" value="setup2fa">Submit</button>
+                        </form>
+                        <div id="message"></div>
+                    </div>
+                </div>
+                </div>
+            <% } else { %>
+                <div class="row">
+                    <div class="span3"></div>
+                    <div class="span3">
+                        <form method="post" action="/twoFactorAuth?enable2fa=true" id="contactform-2">
+                            <input type="hidden" name="_csrf" value="<%= token %>" class="form-control">
+                            <button name="submit" type="submit" class="btn" id="submit" value="enable2fa">Enable 2FA</button>
+                        </form>
+                    </div>
+                    <div class="span3">
+                        <form method="post" action="/twoFactorAuth?enable2fa=false" id="contactform-3">
+                            <input type="hidden" name="_csrf" value="<%= token %>" class="form-control">
+                            <button name="submit" type="submit" class="btn" id="submit" value="skip2fa">Proceed Without 2FA</button>
+                        </form>
+                    </div>
+                    <div class="span3"></div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</section>
+<!-- page content -->
+<%- include ('footer.ejs') %>
